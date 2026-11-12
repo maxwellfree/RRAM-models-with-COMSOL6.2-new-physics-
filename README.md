@@ -82,11 +82,7 @@ This phenomenon is commonly described as thermal inertia or thermal lag.
 
 The persistence of elevated temperatures is particularly important because conductive-filament dissolution follows an Arrhenius-type dependence:
 
-\[
-\frac{\partial r}{\partial t}
-=
--A\exp\left(-\frac{E_a}{k_B T}\right)
-\]
+\[\frac{\partial r}{\partial t}=-A\exp\left(-\frac{E_a}{k_B T}\right)\]
 
 where:
 
