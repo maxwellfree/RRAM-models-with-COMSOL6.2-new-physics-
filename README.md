@@ -104,7 +104,7 @@ $$
 \mathbf{q}=-\boldsymbol{\kappa}_0\nabla T
 $$
 
-where \(\mathbf{q}\) is the heat-flux vector and \(\boldsymbol{\kappa}_0\) is the thermal-conductivity tensor.
+where $\mathbf{q}\) is the heat-flux vector and \(\boldsymbol{\kappa}_0$ is the thermal-conductivity tensor.
 
 Although this formulation is appropriate for many macroscopic applications, its direct application to nanoscale conductive filaments may not adequately reproduce all the thermal behavior observed experimentally.
 
