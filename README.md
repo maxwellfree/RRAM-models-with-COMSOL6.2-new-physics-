@@ -82,19 +82,19 @@ This phenomenon is commonly described as thermal inertia or thermal lag.
 
 The persistence of elevated temperatures is particularly important because conductive-filament dissolution follows an Arrhenius-type dependence:
 
-$$
+```math
 \frac{\partial r}{\partial t}
 =
 -A\exp\left(-\frac{E_a}{k_B T}\right)
-$$
+```
 
 where:
 
-- \(r\) is the local conductive-filament radius.
-- \(A\) is the kinetic prefactor.
-- \(E_a\) is the activation energy.
-- \(k_B\) is Boltzmann's constant.
-- \(T\) is the local temperature.
+- $r$ is the local conductive-filament radius.
+- $A$ is the kinetic prefactor.
+- $E_a$ is the activation energy.
+- $k_B$ is Boltzmann's constant.
+- $T$ is the local temperature.
 
 Because of the exponential temperature dependence, even relatively small differences in the thermal response can produce substantial changes in filament dissolution rates.
 
@@ -104,11 +104,11 @@ Consequently, thermal inertia can significantly influence the evolution of the f
 
 In conventional electrothermal simulations, heat conduction is generally described using Fourier's law:
 
-$$
+```math
 \mathbf{q}=-\boldsymbol{\kappa}_0\nabla T
-$$
+```
 
-where $\mathbf{q}\) is the heat-flux vector and \(\boldsymbol{\kappa}_0$ is the thermal-conductivity tensor.
+where $\mathbf{q}$ is the heat-flux vector and $\boldsymbol{\kappa}_0$ is the thermal-conductivity tensor.
 
 Although this formulation is appropriate for many macroscopic applications, its direct application to nanoscale conductive filaments may not adequately reproduce all the thermal behavior observed experimentally.
 
@@ -120,13 +120,13 @@ Such adjustments can improve agreement with experimental curves but may lead to 
 
 Our approach introduces nonlinear contributions to the heat flux:
 
-$$
+```math
 \mathbf{q}_{\mathrm{total}}
 =
 \mathbf{q}_{\mathrm{linear}}
 +
 \mathbf{q}_{\mathrm{nonlinear}}
-$$
+```
 
 The nonlinear contribution depends on higher-order terms involving the temperature gradient.
 
