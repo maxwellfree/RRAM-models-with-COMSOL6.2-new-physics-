@@ -1,55 +1,371 @@
-Transient Simulation Tool for RRAM Reset Processes
+# RRAM Transient Simulation Framework: SET and RESET Processes with Nonlinear Heat Transport
 
-Why this work?
-An essential aspect of the reset process in resistive random-access memory (RRAM) is the thermal inertia of the filament during cooling. When the applied voltage pulse decreases, the filament does not cool synchronously with the voltage waveform. Instead, its temperature exhibits a delayed tail: the decay of temperature is slower than the decay of the driving voltage that generates the heat. This thermal lag means that, for a given voltage drop, the filament temperature remains higher than it would if the cooling were instantaneous. As a result, the filament spends more time at elevated temperatures. Since filament dissolution follows an Arrhenius-type dependence on activation energy, the removal of filament material is exponentially accelerated with temperature. Consequently, these thermal inertia tails become fundamental to the reset process. They ensure that the filament is reduced more rapidly and irreversibly once the hysteresis loop is entered, providing a realistic explanation of why filament rupture accelerates during reset. Without considering this effect, simulations would fail to capture the physics of the process and would underestimate the rate of filament destruction.
+## Overview
 
-It is important to note that these thermal inertia tails are real, experimentally observed, and measured in the laboratory. They can only be modeled through two possible approaches:
+This repository presents a computational framework for the transient simulation of resistive random-access memories (RRAM), developed using **COMSOL Multiphysics, MATLAB LiveLink, and custom physics implemented through COMSOL Physics Builder**.
 
-    1. By artificially increasing the density and the constant-pressure heat capacity of the materials forming the filament and its dielectric matrix. 
-    2. By introducing nonlinear Fourier-type heat transport terms in the thermal equations.
+The central objective of this research is to describe the coupled electrical, thermal, and morphological processes governing the formation and rupture of nanoscale conductive filaments in resistive memories.
 
-The first approach is unphysical, as it artificially adds matter that does not exist. The second approach, based on nonlinear transport, is more realistic and provides a consistent explanation of the observed hysteresis and accelerated filament rupture. 
+The framework incorporates nonlinear heat transport, providing an alternative to conventional Fourier-based models when describing the thermal inertia observed during filament evolution.
 
-This work specifically addresses this matter by implementing nonlinear heat transport physics, ensuring that the experimentally observed thermal inertia and accelerated filament rupture are captured realistically in the reset process of RRAM.
+### New developments
 
-Introduction
+The original implementation focused on the RESET process, particularly the dissolution and eventual rupture of conductive filaments under relatively slow voltage pulses.
 
-The core motivation behind developing this new simulation framework was the need to incorporate nonlinear heat transport physics into the model. In conventional approaches, the hysteresis observed in experimental data — particularly the acceleration of filament destruction during reset — could not be explained satisfactorily.  Previously, to reproduce experimental results, it was common practice to artificially increase both the material density and its constant-pressure specific heat capacity in the simulation. While this could yield curves that matched measured data, the method was physically unrealistic and masked the true underlying mechanisms.
+**The new version extends the simulation framework in two important directions:**
 
-Our updated model resolves this by explicitly considering nonlinear thermal transport processes. This allows the simulation to capture the hysteresis effect naturally, without resorting to unphysical parameter adjustments, and to reproduce the observed acceleration of filament rupture under realistic conditions.
+1. **SET and RESET simulation:** The framework now supports both the formation and growth of conductive filaments (SET) and their dissolution and rupture (RESET).
+2. **Fast transient simulation:** In addition to relatively slow voltage-pulse regimes, the new version can simulate fast transient processes, extending its applicability to shorter electrical and thermal timescales.
 
-The following video explains this issue: https://drive.upm.es/s/gG7RfgdbLpwyNDK
+These developments broaden the scope of the original computational framework and allow the investigation of a wider range of resistive-switching phenomena.
 
-The Repository
-This repository (https://github.com/maxwellfree/RRAM-models-with-COMSOL6.0-new-physics-) contains tools and scripts for the transient simulation of RRAM devices undergoing a reset process — the physical destruction of a conductive filament within the dielectric layer.
+It is important to distinguish these new capabilities from the results presented in the published paper. The article focuses specifically on RESET processes under relatively slow voltage pulses. The SET and fast-transient capabilities belong to subsequent developments of the simulation framework and are not covered by that publication.
 
-This repository contains the essential components required for transient simulations of resistive random-access memory devices during the reset process. It includes two MATLAB scripts: connect.m, which establishes the connection between MATLAB and the COMSOL Multiphysics server, and FindResetTrans.m, which runs the transient simulation of filament rupture while tracking temperature, voltage, and current. The COMSOL model file Ni-HfO2-Si.mph provides the device geometry and standard physics for the RRAM cell, while RRAMNonLinear6_2.mphphb introduces the new nonlinear heat transport physics developed to realistically capture hysteresis and accelerated filament destruction. Together with the licensing information and documentation files, these components form a complete environment for studying and reproducing reset dynamics in RRAM devices.
+---
 
-MATLAB+COMSOL Video
-A walkthrough video is available that shows how to perform the transient reset simulation of an RRAM device using MATLAB in conjunction with COMSOL Multiphysics, leveraging LiveLink. In this video, you’ll see how MATLAB repeatedly calls the COMSOL model in short time steps, updating parameters, running the simulation, and recording the evolution of key variables such as maximum temperature, current, and voltage. It offers a clear, step-by-step guide to automating transient simulations via LiveLink in a practical research context.
+## Published Research
 
-The video demonstrates how a train of voltage pulses is divided into small time intervals in order to evolve the transient simulation algorithm step by step. Within each interval, the geometry of the conductive filament is progressively updated according to the filament reduction equation, which reflects the physical shrinkage of the filament during reset. This incremental modification of the filament geometry, and therefore the computational domain, takes place while the applied voltage is increased or decreased. The process naturally incorporates a constructive feedback loop: at every step, MATLAB coordinates COMSOL to solve the Poisson equation, the heat equation, and the filament transformation equation. By doing so, the simulation dynamically accounts for both the electrical and thermal effects that accelerate filament rupture. In practice, MATLAB acts as the orchestrator, ensuring that the geometry inside the COMSOL model evolves consistently with the applied voltage pulses and the underlying physical processes.
+The mathematical formulation and numerical methodology underlying the original RESET model have been published in the international scientific journal *Mathematics and Computers in Simulation*, published by Elsevier.
 
-Video (MATLAB): https://drive.upm.es/s/LbDB6RLMEyDN2pM
-Video (Reset verification): https://drive.upm.es/s/9W3CjiXP8B4fojg
+**Moreno, E., Barrera, D., Ibáñez, M. J., & Roldán, J. B. (2026).**
 
-Formulation
-The video at the end of this text provides an explanation of the weak formulation that has been employed to build the physics in the COMSOL Physics Builder. Following this, a second video will explain how this mathematical formulation is used to construct the physics within the builder itself.
-In particular, the discussion will highlight the equivalences between the syntax that is naturally used when formulating a problem in weak form in the finite element method, and how that same structure is implemented in the COMSOL Physics Builder. This includes the treatment of boundary conditions of both Dirichlet and Neumann types, showing how the standard weak formulation translates into the builder’s framework
-Video: https://drive.upm.es/s/9kEmDfLS99fx5r4
+**A nonlinear mathematical model for the transient heat equation in resistive memories.**
 
-COMSOL Physics Builder
-The video at the end of this text is a step-by-step visual explanation of how the physics has been created in COMSOL based on the weak formulation previously discussed. It shows in detail how this formulation is translated into the COMSOL Physics Builder and then incorporated into the simulator. Finally, the video demonstrates how the constructed physics can be used within COMSOL to build and run a complete model.
+*Mathematics and Computers in Simulation.*
 
-Video: https://drive.upm.es/s/em6rHxcLWy7n8sk
+DOI: https://doi.org/10.1016/j.matcom.2026.10.040
 
-COMSOL model using new physics
-At the end of this text, a video is provided that details, step by step, the process of creating the COMSOL model that will be used in the simulations. This model is built using the new physics that we have developed through the Physics Builder, which was explained previously.
+Accepted: October 28, 2026.
 
-Video: https://drive.upm.es/s/Eqatgf8FSsN5MgF
+The article introduces a nonlinear constitutive formulation for heat transport, motivated by the Landauer framework for nanoscale transport phenomena.
 
+The resulting mathematical model couples:
 
+- Electrical conduction and charge conservation.
+- Joule heating and nonlinear thermal transport.
+- Temperature-dependent conductive-filament evolution.
+- Arrhenius-type kinetics governing filament dissolution.
+- Dynamic geometry reconstruction and adaptive remeshing.
 
-For any questions or clarifications regarding the procedures described, you are welcome to contact me directly by email. I will be glad to provide support or further explanations concerning the use, creation, and application of these tools.
+The governing equations are implemented using the finite-element weak formulation within COMSOL Physics Builder.
 
-📧 [em.moreno@upm.es]
+MATLAB coordinates the transient calculations, updates the conductive-filament geometry, and manages the successive simulation intervals through LiveLink.
+
+The published study demonstrates how nonlinear heat transport can contribute to explaining the thermal behavior of RRAM devices without relying exclusively on artificially modified material properties.
+
+### Citation
+
+```bibtex
+@article{Moreno2026NonlinearRRAM,
+  author  = {Moreno, E. and Barrera, D. and Ibanez, M. J. and Roldan, J. B.},
+  title   = {A nonlinear mathematical model for the transient heat equation in resistive memories},
+  journal = {Mathematics and Computers in Simulation},
+  year    = {2026},
+  doi     = {10.1016/j.matcom.2026.10.040},
+  url     = {https://doi.org/10.1016/j.matcom.2026.10.040}
+}
+```
+
+---
+
+## Why This Work?
+
+An essential aspect of resistive switching in RRAM devices is the thermal response of the conductive filament during voltage-pulse operation.
+
+During RESET, the conductive filament progressively dissolves until the electrical connection between the electrodes is interrupted.
+
+This process is strongly temperature-dependent.
+
+When the applied voltage decreases, the filament does not necessarily cool at the same rate as the electrical excitation. Instead, its temperature can exhibit a delayed response, remaining elevated after the voltage has started to decrease.
+
+This phenomenon is commonly described as thermal inertia or thermal lag.
+
+The persistence of elevated temperatures is particularly important because conductive-filament dissolution follows an Arrhenius-type dependence:
+
+\[
+\frac{\partial r}{\partial t}
+=
+-A\exp\left(-\frac{E_a}{k_B T}\right)
+\]
+
+where:
+
+- \(r\) is the local conductive-filament radius.
+- \(A\) is the kinetic prefactor.
+- \(E_a\) is the activation energy.
+- \(k_B\) is Boltzmann's constant.
+- \(T\) is the local temperature.
+
+Because of the exponential temperature dependence, even relatively small differences in the thermal response can produce substantial changes in filament dissolution rates.
+
+Consequently, thermal inertia can significantly influence the evolution of the filament and the switching characteristics of the device.
+
+### Limitations of conventional thermal models
+
+In conventional electrothermal simulations, heat conduction is generally described using Fourier's law:
+
+\[
+\mathbf{q}=-\boldsymbol{\kappa}_0\nabla T
+\]
+
+where \(\mathbf{q}\) is the heat-flux vector and \(\boldsymbol{\kappa}_0\) is the thermal-conductivity tensor.
+
+Although this formulation is appropriate for many macroscopic applications, its direct application to nanoscale conductive filaments may not adequately reproduce all the thermal behavior observed experimentally.
+
+In particular, reproducing certain RESET characteristics using conventional models has sometimes required artificially increasing the density or specific heat capacity of the simulated materials.
+
+Such adjustments can improve agreement with experimental curves but may lead to effective material parameters that are difficult to justify physically.
+
+### Nonlinear heat transport
+
+Our approach introduces nonlinear contributions to the heat flux:
+
+\[
+\mathbf{q}_{\mathrm{total}}
+=
+\mathbf{q}_{\mathrm{linear}}
++
+\mathbf{q}_{\mathrm{nonlinear}}
+\]
+
+The nonlinear contribution depends on higher-order terms involving the temperature gradient.
+
+This modification provides additional flexibility for describing heat transport at the nanoscale and can produce thermal responses that differ substantially from those predicted by the conventional linear Fourier model.
+
+The resulting thermal behavior influences the Arrhenius kinetics of filament dissolution and, consequently, the electrical response during RESET.
+
+The purpose is not simply to reproduce experimental curves, but to investigate a physically motivated mathematical description of the coupled electrothermal processes.
+
+Nonlinear thermal transport is proposed as a mechanism contributing to the observed behavior, rather than being asserted as the only possible explanation of thermal inertia.
+
+**Explanatory video:**
+
+https://drive.upm.es/s/gG7RfgdbLpwyNDK
+
+---
+
+## From RESET-Only Simulation to SET and RESET
+
+The original computational implementation was designed primarily to reproduce the progressive destruction of conductive filaments during RESET.
+
+The updated framework extends this approach to both switching directions.
+
+### RESET: Filament dissolution and rupture
+
+During RESET, the conductive filament progressively decreases in cross-sectional area as a result of temperature-dependent material migration.
+
+The simulation tracks the electrical and thermal response while updating the filament geometry.
+
+The process continues until the filament reaches a rupture condition and the device transitions toward its high-resistance state (HRS).
+
+The published article concentrates on this process.
+
+### SET: Filament formation and growth
+
+During SET, the conductive pathway develops or grows through the dielectric material, allowing the device to transition from a high-resistance state toward a low-resistance state (LRS).
+
+The new version of the simulation framework extends the numerical treatment to this process.
+
+The objective is to describe filament formation and growth while accounting for the interaction between the electrical excitation, temperature distribution, and evolving conductive geometry.
+
+SET and RESET involve different morphological evolution processes. Consequently, the growth kinetics used for SET should not be assumed to be identical to the dissolution law employed in the published RESET model.
+
+### Fast transient simulation
+
+Another important extension concerns the temporal resolution and operating regime of the simulations.
+
+The original published work concentrates on RESET processes under relatively slow voltage pulses.
+
+The new version can also address fast transient phenomena, in which the electrical excitation and thermal response evolve over substantially shorter timescales.
+
+This capability is particularly relevant for investigating the dynamic behavior of resistive memories under rapid switching conditions.
+
+The extension to fast transients broadens the range of operating conditions that can be studied, although the quantitative validity of the physical assumptions and numerical approximations must be assessed for the corresponding timescales.
+
+### Scope of the different versions
+
+| Feature | Published 2026 Model | New Version |
+|---|---|---|
+| RESET simulation | Yes | Yes |
+| SET simulation | Not addressed | Yes |
+| Nonlinear thermal transport | Yes | Extended framework |
+| Relatively slow voltage pulses | Yes | Yes |
+| Fast transient simulation | Not addressed | Yes |
+| Electrical and thermal coupling | Yes | Yes |
+| Conductive-filament evolution | Dissolution | Growth and dissolution |
+| MATLAB–COMSOL framework | Yes | Yes |
+
+The new capabilities described here correspond to software development beyond the scope of the published article.
+
+---
+
+## The Repository
+
+Repository:
+
+https://github.com/maxwellfree/RRAM-models-with-COMSOL6.0-new-physics-
+
+The repository provides computational resources for studying transient electrothermal phenomena in resistive memories.
+
+The original RESET implementation includes the following components:
+
+**connect.m**
+
+A MATLAB script that establishes communication between MATLAB and the COMSOL Multiphysics server through LiveLink.
+
+**FindResetTrans.m**
+
+A MATLAB script for running the transient RESET simulation, tracking the applied voltage, electrical current, temperature evolution, and conductive-filament dissolution.
+
+**Ni-HfO2-Si.mph**
+
+A COMSOL model containing the device geometry and the physical configuration used in the original simulation framework.
+
+**RRAMNonLinear6_2.mphphb**
+
+A custom COMSOL Physics Builder file implementing the nonlinear heat-transport formulation.
+
+Together, these components establish the original numerical environment for studying the transient RESET process.
+
+The newer SET and fast-transient developments extend this framework. The original file descriptions above should not be interpreted as a complete inventory of the newer implementation.
+
+---
+
+## Numerical Methodology
+
+The computational approach combines finite-element analysis with sequential updates of the conductive-filament geometry.
+
+The simulation involves three strongly coupled physical processes.
+
+### 1. Electrical problem
+
+The electrical potential is calculated by solving the governing equations for charge conservation and electrical transport.
+
+The resulting electric field determines the current distribution and Joule-heating source.
+
+### 2. Thermal problem
+
+The temperature distribution is calculated using the heat equation, including nonlinear contributions to the thermal flux.
+
+The thermal model accounts for the energy generated by electrical conduction and the redistribution of heat through the device.
+
+### 3. Conductive-filament evolution
+
+The filament geometry evolves according to temperature-dependent kinetic laws.
+
+During RESET, the model describes filament dissolution.
+
+In the extended SET framework, filament growth is also considered.
+
+### Sequential simulation procedure
+
+The transient calculation is divided into successive time intervals.
+
+Within each interval:
+
+1. MATLAB coordinates the COMSOL simulation.
+2. COMSOL calculates the electrical and thermal fields for the current device geometry.
+3. The temperature distribution is used to evaluate filament-evolution kinetics.
+4. MATLAB updates the conductive-filament geometry.
+5. The computational domains and finite-element mesh are reconstructed.
+6. The next simulation interval begins using the updated configuration.
+
+This procedure allows the evolving geometry to interact with the electrical and thermal fields throughout the transient simulation.
+
+In the published RESET implementation, the electrothermal equations are solved together for a fixed geometry within each interval, while morphological changes are incorporated sequentially between intervals.
+
+---
+
+## MATLAB + COMSOL Video
+
+A walkthrough video demonstrates how to perform transient RESET simulations using MATLAB and COMSOL Multiphysics through LiveLink.
+
+The tutorial shows how MATLAB repeatedly calls the COMSOL model, updates simulation parameters, modifies the conductive-filament geometry, and records the evolution of the relevant physical variables.
+
+A train of voltage pulses is divided into shorter time intervals, allowing the filament geometry to evolve progressively during the simulation.
+
+At each stage, the electrical and thermal fields are recalculated for the updated geometry.
+
+This procedure provides a practical example of automating multiphysics simulations involving changing computational domains.
+
+**MATLAB simulation video:**
+
+https://drive.upm.es/s/LbDB6RLMEyDN2pM
+
+**RESET verification video:**
+
+https://drive.upm.es/s/9W3CjiXP8B4fojg
+
+---
+
+## Mathematical Formulation
+
+The mathematical formulation is implemented using the finite-element weak formulation.
+
+This approach provides the flexibility required to introduce physical equations that are not directly available in the standard COMSOL physics interfaces.
+
+The tutorial explains how the governing differential equations are transformed into their weak forms and subsequently implemented using COMSOL Physics Builder.
+
+Particular attention is given to the relationship between conventional finite-element notation and the expressions required by the software.
+
+The treatment of Dirichlet and Neumann boundary conditions is also discussed.
+
+**Weak formulation video:**
+
+https://drive.upm.es/s/9kEmDfLS99fx5r4
+
+---
+
+## COMSOL Physics Builder
+
+COMSOL Physics Builder allows researchers to create custom physics interfaces by defining governing equations, dependent variables, material properties, and boundary conditions.
+
+In this project, Physics Builder is used to implement the nonlinear thermal formulation developed for the simulation of resistive memories.
+
+The tutorial explains how the weak formulation is translated into the corresponding COMSOL expressions and how the resulting custom physics can be incorporated into a simulation model.
+
+**COMSOL Physics Builder video:**
+
+https://drive.upm.es/s/em6rHxcLWy7n8sk
+
+---
+
+## COMSOL Model Using the New Physics
+
+This tutorial presents the construction of the COMSOL model using the custom physics developed through Physics Builder.
+
+The video explains the main steps required to define the model, incorporate the new equations, and prepare the numerical simulation.
+
+It provides a practical demonstration of how the mathematical formulation can be integrated into a working multiphysics environment.
+
+**COMSOL model video:**
+
+https://drive.upm.es/s/Eqatgf8FSsN5MgF
+
+---
+
+## Research Perspectives
+
+The development of a unified simulation framework for SET and RESET processes opens several research directions.
+
+These include investigating the influence of nonlinear thermal transport on filament formation and rupture, studying the relationship between pulse duration and switching dynamics, and examining the effects of thermal inertia across different operating regimes.
+
+The extension to fast transients also provides opportunities to investigate shorter switching timescales and the limitations of conventional electrothermal descriptions.
+
+Future studies may compare the different formulations against experimental measurements and examine their predictive capabilities for different materials, geometries, and electrical excitation conditions.
+
+The broader objective is to develop physically consistent and computationally reproducible tools for investigating resistive-switching devices.
+
+---
+
+## Contact
+
+For questions regarding the mathematical formulation, COMSOL Physics Builder implementation, MATLAB LiveLink procedures, or the newer SET and fast-transient simulation developments, please contact:
+
+**E. Moreno**
+
+Universidad Politécnica de Madrid
+
+Email: [em.moreno@upm.es](mailto:em.moreno@upm.es)
+
+I will be glad to provide further information or clarification concerning the use, development, and application of these research tools.
